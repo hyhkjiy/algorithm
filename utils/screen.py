@@ -29,7 +29,7 @@ class ScreenProxy:
             self.screen.move(0, row)
             self.screen.draw(self.screen.width, row, char=' ', colour=7, bg=0)
 
-    def draw_int_array(self, array, especial=None, default_color=COLOR.WHITE):
+    def draw_int_array(self, array, especial=None, default_color=COLOR.WHITE, seconds=0.5):
         """
         将int类型数组渲染到控制台友好展示
         :param array: 要展示的数组
@@ -45,8 +45,10 @@ class ScreenProxy:
                 ...
             }
         :param default_color: 渲染颜色，默认为COLOR.WHITE
+        :param seconds: 保持时间，默认保持0.5秒
         """
-        assert len(filter(lambda obj: isinstance(obj, int), array)) == len(array), '不是纯int数组'
+        if len(filter(lambda obj: isinstance(obj, int), array)) < len(array):  # 不是int类型数组的时候不做任何操作
+            return
         if isinstance(especial, list):
             especial = {i: COLOR.RED for i in especial}
         for i, number in enumerate(array):
@@ -55,10 +57,24 @@ class ScreenProxy:
                 self.screen.draw(i, number, char='#', colour=especial[i])
             else:
                 self.screen.draw(i, number, char='#', colour=default_color)
-
-    @staticmethod
-    def sleep(seconds):
+        self.screen.refresh()
         time.sleep(seconds)
+        self.clear()
+
+    @classmethod
+    def dump_array(cls, array, msg=None):
+        """
+        迭代输出一个可迭代对象（如列表）
+        :param array:
+        """
+        assert hasattr(array, '__iter__'), '请传入一个可迭代对象'
+        if msg:
+            print msg.center(30, '=')
+        for e in array:
+            if isinstance(array, dict):
+                print '%s: %s' % (e, array[e])
+                continue
+            print e
 
     @staticmethod
     def open(*args, **kwargs):
@@ -73,3 +89,9 @@ class ScreenProxy:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.screen.close()
+
+
+if __name__ == '__main__':
+    import mock
+
+    ScreenProxy.dump_array(mock.sample_exam_results(5))
