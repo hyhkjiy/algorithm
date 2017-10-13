@@ -28,12 +28,12 @@ class DrawArray(list):
         self.su = ScreenUtil()
 
     def __setitem__(self, key, value):
-        if len(self.history) % 2 == 0:
-            especial = len(self.history) and {self.history[-1]: COLOR.RED} or {}
-            especial.update({key: COLOR.YELLOW})
-            self.su.draw_int_array(self, especial=especial, seconds=self.interval)
         self.history.append(key)
         super(DrawArray, self).__setitem__(key, value)
+        if len(self.history) % 2 == 0:
+            especial = len(self.history) and {self.history[-2]: COLOR.RED} or {}
+            especial.update({key: COLOR.YELLOW})
+            self.su.draw_int_array(self, especial=especial, seconds=self.interval)
 
 
 class ScreenUtil:
