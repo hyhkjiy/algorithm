@@ -5,6 +5,7 @@ asciimatics项目地址：https://github.com/peterbrittain/asciimatics
 asciimatics文档地址：http://asciimatics.readthedocs.io/en/stable/
 """
 import time
+import mock
 from asciimatics.screen import Screen
 
 
@@ -19,7 +20,23 @@ class COLOR(object):
     WHITE = Screen.COLOUR_WHITE
 
 
-class ScreenProxy:
+class DrawArray(list):
+    def __init__(self, *args, **kwargs):
+        super(DrawArray, self).__init__(*args, **kwargs)
+        self.interval = 0.5  # 绘画间隔时间，以秒为单位
+        self.history = []
+        self.su = ScreenUtil()
+
+    def __setitem__(self, key, value):
+        if len(self.history) % 2 == 0:
+            especial = len(self.history) and {self.history[-1]: COLOR.RED} or {}
+            especial.update({key: COLOR.YELLOW})
+            self.su.draw_int_array(self, especial=especial, seconds=self.interval)
+        self.history.append(key)
+        super(DrawArray, self).__setitem__(key, value)
+
+
+class ScreenUtil:
     def clear(self):
         """
         asciimatics.screen.Screen.clear()方法偶尔会闪屏，不知道为什么。
@@ -61,21 +78,6 @@ class ScreenProxy:
         time.sleep(seconds)
         self.clear()
 
-    @classmethod
-    def dump_array(cls, array, msg=None):
-        """
-        迭代输出一个可迭代对象（如列表）
-        :param array:
-        """
-        assert hasattr(array, '__iter__'), '请传入一个可迭代对象'
-        if msg:
-            print msg.center(30, '=')
-        for e in array:
-            if isinstance(array, dict):
-                print '%s: %s' % (e, array[e])
-                continue
-            print e
-
     @staticmethod
     def open(*args, **kwargs):
         return Screen.open(*args, **kwargs)
@@ -90,8 +92,39 @@ class ScreenProxy:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.screen.close()
 
+    def close(self, *args, **kwargs):
+        self.screen.close(*args, **kwargs)
+
+
+def draw_sorting(sort, start=1, stop=31, interval=0.5):
+    """
+    绘制排序过程
+    :param sort: 排序方法
+    :param start: 起始数字
+    :param stop: 结束数字 + 1
+    :param interval: 绘画时间间隔
+    """
+    array = DrawArray(mock.sample_range(start, stop))
+    try:
+        array.interval = interval
+        sort(array)
+    finally:
+        array.su.close()
+
+
+def print_array(array, msg=None):
+    """
+    迭代输出一个可迭代对象（如列表）
+    """
+    assert hasattr(array, '__iter__'), '请传入一个可迭代对象'
+    if msg:
+        print msg.center(30, '=')
+    for e in array:
+        if isinstance(array, dict):
+            print '%s: %s' % (e, array[e])
+            continue
+        print e
+
 
 if __name__ == '__main__':
-    import mock
-
-    ScreenProxy.dump_array(mock.sample_exam_results(5))
+    print_array(mock.sample_exam_results(5))
