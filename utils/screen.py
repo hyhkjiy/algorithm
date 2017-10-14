@@ -25,14 +25,16 @@ class DrawArray(list):
         super(DrawArray, self).__init__(*args, **kwargs)
         self.interval = 0.5  # 绘画间隔时间，以秒为单位
         self.history = []
+        self.frame_frequency = 1  # 每各多少次写入操作展示一次动画
         self.su = ScreenUtil()
+        self.tag_num = 2  # 高亮列数量
 
     def __setitem__(self, key, value):
         self.history.append(key)
         super(DrawArray, self).__setitem__(key, value)
-        if len(self.history) % 2 == 0:
-            especial = len(self.history) and {self.history[-2]: COLOR.RED} or {}
-            especial.update({key: COLOR.YELLOW})
+        if len(self.history) % self.frame_frequency == 0:
+            especial = {i: COLOR.YELLOW for i in self.history[-self.tag_num:-1]}
+            especial.update({key: COLOR.RED})
             self.su.draw_int_array(self, especial=especial, seconds=self.interval)
 
 
@@ -96,17 +98,21 @@ class ScreenUtil:
         self.screen.close(*args, **kwargs)
 
 
-def draw_sorting(sort, start=1, stop=31, interval=0.5):
+def draw_sorting(sort, start=1, stop=31, interval=0.5, frame_frequency=2, tag_num=2):
     """
     绘制排序过程
     :param sort: 排序方法
     :param start: 起始数字
     :param stop: 结束数字 + 1
     :param interval: 绘画时间间隔
+    :param frame_frequency: 每隔多少次写操作展示一个画面
+    :param tag_num: 高亮列的数量
     """
     array = DrawArray(mock.sample_range(start, stop))
     try:
         array.interval = interval
+        array.frame_frequency = frame_frequency
+        array.tag_num = tag_num
         sort(array)
     finally:
         array.su.close()
