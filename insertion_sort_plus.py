@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # 对算法进行可视化
     screen.draw_sorting(insertion_sort_plus, interval=1, frame_frequency=0.5, tag_num=1)
 
-    # 对对象列表进行选择排序
+    # 对对象列表进行插入排序
     exam_results = mock.sample_exam_results(8)
     screen.print_array(exam_results, '排序前')
     insertion_sort_plus(exam_results)
