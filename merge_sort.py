@@ -2,9 +2,8 @@
 from utils import screen, mock, used_time
 
 
-def __merge(array, start, end):
+def __merge(array, start, end, middle):
     index_left = start
-    middle = int(end / 2.0 + start / 2.0)
     index_right = middle
 
     temp_arr = []
@@ -38,7 +37,7 @@ def __merge_sort(array, start, end):
     __merge_sort(array, middle, end)  # 排序数组右边部分
     if array[middle - 1] <= array[middle]:  # 如果左边部分最后(最大)一个数小于右边部分最前(最小)一个数，则左右部分已经有序
         return
-    __merge(array, start, end)  # 归并左右部分
+    __merge(array, start, end, middle)  # 归并左右部分
 
 
 def merge_sort(array):
@@ -48,18 +47,31 @@ def merge_sort(array):
     思路：
         归并排序也是采用分组排序的方式，每次将两个有序的数组归并成一个有序数组，然后进行递归，直到只剩下一个数组的时候排序就完成了。
 
-        a b c d e f g h
-        8 5 2 0 1 6 3 9  # 未经过排序的初始数组，每个元素可以看成一个有序数组，一共n个，此时只有连续长度为1的元素有序
+        8 5 2 0 1 6 3 9
+        A A A A B B B B  # 将待排序的数组分为左右两组
 
-        a a b b c c d d  # 将两个有序的数组归并为一个（原a，b两组归并成新的a组;原c，d组归并成新的b组...）
-        5 8 0 2 1 6 3 9  # 归并后每组又是有序的了，此时连续长度为2的元素有序（比如a组的5,8;b组的0,2;c组的1,6;e组的3,9）
 
-        a a a a b b b b  # 继续将两个有序的数组归并为一个（上一轮的a，b组归并成为新的a组）
-        0 2 5 8 1 3 6 9  # 归并后连续长度为4的数组保持有序（a组的4个元素和b组的4个元素）
+        8 5 2 0 1 6 3 9
+        A A A A B B B B
+        a a b b c c d d  # 将每组继续分为左右两组
 
-        a a a a a a a a  # 继续归并
-        0 1 2 3 5 6 8 9  # 此时连续8（n=8）个元素保持有序，排序完成
 
+        8 5 2 0 1 6 3 9
+        A A A A B B B B
+        a a b b c c d d
+        1 2 3 4 5 6 7 8  # 直至分到每组只有一个元素
+
+
+        5 8 0 2 1 6 3 9  # 按最底层分组进行归并
+        A A A A B B B B
+        a a b b c c d d
+
+
+        0 2 5 8 1 3 6 9  # 继续归并
+        A A A A B B B B
+
+
+        0 1 2 3 5 6 8 9  # 归并完最顶层的分组后，排序完成
 
     """
 
