@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-# from utils import mock, screen, used_time
 from utils import screen, mock, used_time
 
 
@@ -37,6 +36,8 @@ def __merge_sort(array, start, end):
 
     __merge_sort(array, start, middle)  # 排序数组左边部分
     __merge_sort(array, middle, end)  # 排序数组右边部分
+    if array[middle - 1] <= array[middle]:  # 如果左边部分最后(最大)一个数小于右边部分最前(最小)一个数，则左右部分已经有序
+        return
     __merge(array, start, end)  # 归并左右部分
 
 
@@ -67,7 +68,7 @@ def merge_sort(array):
 
 if __name__ == '__main__':
     # 对算法进行可视化
-    screen.draw_sorting(merge_sort)
+    screen.draw_sorting(merge_sort, interval=0.1)
 
     # 对对象列表进行选择排序
     exam_results = mock.sample_exam_results(9)

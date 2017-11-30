@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from utils import mock, screen, used_time, sample_range
+from utils import mock, screen, used_time
 
 
 def _selection_sort(array):

@@ -19,7 +19,7 @@ def selection_sort(array):
 
 if __name__ == '__main__':
     # 对算法进行可视化
-    screen.draw_sorting(selection_sort)
+    screen.draw_sorting(selection_sort, interval=0.1)
 
     # 对对象列表进行选择排序
     exam_results = mock.sample_exam_results(80)
